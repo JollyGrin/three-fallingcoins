@@ -17,8 +17,13 @@
 	import { CylinderGeometry, MeshStandardMaterial } from 'three';
 	import { clamp } from 'three/src/math/MathUtils.js';
 
-	export let position: Vector3 | undefined = undefined;
-	export let rotation: Euler | undefined = undefined;
+	let {
+		position,
+		rotation
+	}: {
+		position?: Vector3;
+		rotation?: Euler;
+	} = $props();
 
 	const audios: {
 		threshold: number;
@@ -44,7 +49,10 @@
 		audio?.play?.();
 	};
 
-	$: rotationCasted = rotation?.toArray() as [x: number, y: number, z: number];
+	let rotationCasted: [x: number, y: number, z: number] = $state([0, 0, 0]);
+	$effect(() => {
+		rotationCasted = rotation?.toArray() as [x: number, y: number, z: number];
+	});
 </script>
 
 <T.Group
