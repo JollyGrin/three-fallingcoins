@@ -1,6 +1,10 @@
 <script lang="ts" context="module">
-	const geometry = new BoxGeometry(1, 1, 1);
-	const material = new MeshStandardMaterial();
+	const geometry = new CylinderGeometry(0.5, 0.5, 0.1, 32);
+	const material = new MeshStandardMaterial({
+		color: '#ffd700',
+		metalness: 0.8,
+		roughness: 0.2
+	});
 	export const muted = writable(true);
 </script>
 
@@ -10,7 +14,7 @@
 	import { Collider, RigidBody, type ContactEvent } from '@threlte/rapier';
 	import { writable } from 'svelte/store';
 	import type { Euler, Vector3 } from 'three';
-	import { BoxGeometry, MeshStandardMaterial } from 'three';
+	import { CylinderGeometry, MeshStandardMaterial } from 'three';
 	import { clamp } from 'three/src/math/MathUtils.js';
 
 	export let position: Vector3 | undefined = undefined;
@@ -63,9 +67,10 @@
 
 		<Collider
 			contactForceEventThreshold={30}
-			restitution={0.4}
-			shape={'cuboid'}
-			args={[0.5, 0.5, 0.5]}
+			restitution={0.3}
+			friction={0.5}
+			shape={'cylinder'}
+			args={[0.05, 0.5]}
 		/>
 		<T.Mesh castShadow receiveShadow {geometry} {material} />
 	</RigidBody>
