@@ -1,13 +1,31 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
-	import { RigidBody } from '@threlte/rapier';
-	import { MathUtils } from 'three';
+	import { RigidBody, type RigidBodyApi } from '@threlte/rapier';
+	import { MathUtils, Vector3 } from 'three';
 
 	// Coin spawn settings
 	let spawnHeight = 10;
-	let coins = $state([]);
+	let coins = $state<RigidBodyApi[]>([]);
 	let coinCount = $state(0);
+
+	// Random position within bounds
+	function getRandomPosition() {
+		return {
+			x: (Math.random() - 0.5) * 8,
+			y: spawnHeight,
+			z: (Math.random() - 0.5) * 8
+		};
+	}
+
+	// Random rotation
+	function getRandomRotation() {
+		return {
+			x: Math.random() * Math.PI * 2,
+			y: Math.random() * Math.PI * 2,
+			z: Math.random() * Math.PI * 2
+		};
+	}
 
 	// Function to spawn a coin
 	function spawnCoin() {
@@ -15,27 +33,24 @@
 		if (coins.length >= 20) {
 			// Remove oldest coin
 			const oldestCoin = coins[0];
-			oldestCoin?.sleep();
+			if (oldestCoin) {
+				oldestCoin.setTranslation(new Vector3(100, 100, 100));
+				oldestCoin.sleep();
+			}
 			coins = coins.slice(1);
 		}
 
-		// Create new coin with random position and rotation
+		// Create new coin
 		coinCount++;
-		const x = MathUtils.randFloat(-3, 3);
-		const z = MathUtils.randFloat(-3, 3);
-		const rotX = MathUtils.randFloat(0, Math.PI);
-		const rotY = MathUtils.randFloat(0, Math.PI);
-		const rotZ = MathUtils.randFloat(0, Math.PI);
-
-		// Add coin to scene
-		coins = [...coins, null]; // Placeholder until onCreate callback
 	}
 
-	// Spawn a coin every second
-	let spawnInterval: number;
+	// Initial coin and interval setup
 	$effect(() => {
-		spawnInterval = setInterval(spawnCoin, 1000);
-		return () => clearInterval(spawnInterval);
+		// Create first coin immediately
+		spawnCoin();
+		// Then set up interval for more coins
+		const interval = setInterval(spawnCoin, 1000);
+		return () => clearInterval(interval);
 	});
 </script>
 
@@ -56,15 +71,15 @@
 <T.AmbientLight intensity={0.5} />
 
 <!-- Ground plane -->
-<RigidBody type="fixed" friction={0.8}>
+<RigidBody type="fixed" friction={0.8} restitution={0.2} collisionGroups={0b0001}>
 	<T.Mesh rotation.x={-Math.PI / 2} receiveShadow>
-		<T.PlaneGeometry args={[10, 10]} />
+		<T.BoxGeometry args={[10, 10, 0.5]} />
 		<T.MeshStandardMaterial color="#f0f0f0" />
 	</T.Mesh>
 </RigidBody>
 
 <!-- Boundary Walls -->
-<RigidBody type="fixed" friction={0.2}>
+<RigidBody type="fixed" friction={0.2} restitution={0.4} collisionGroups={0b0001}>
 	<!-- Back wall -->
 	<T.Mesh position={[0, 2, -5]} receiveShadow>
 		<T.BoxGeometry args={[10, 4, 0.2]} />
@@ -89,23 +104,23 @@
 
 <!-- Dynamic Coins -->
 {#each Array(coinCount) as _, i}
+	{@const pos = getRandomPosition()}
+	{@const rot = getRandomRotation()}
 	<RigidBody
-		position={[MathUtils.randFloat(-3, 3), spawnHeight, MathUtils.randFloat(-3, 3)]}
-		rotation={[
-			MathUtils.randFloat(0, Math.PI),
-			MathUtils.randFloat(0, Math.PI),
-			MathUtils.randFloat(0, Math.PI)
-		]}
+		position={[pos.x, pos.y, pos.z]}
+		rotation={[rot.x, rot.y, rot.z]}
 		restitution={0.3}
 		friction={0.5}
-		onCreate={(body) => {
-			const index = coins.indexOf(null);
-			if (index !== -1) {
-				coins[index] = body;
-			}
-		}}
-		onDestroy={(body) => {
-			coins = coins.filter((c) => c !== body);
+		collisionGroups={0b0001}
+		gravityScale={1}
+		linearDamping={0.2}
+		angularDamping={0.2}
+		enableSleep={true}
+		oncreate={(body) => {
+			coins = [...coins, body];
+			return () => {
+				coins = coins.filter((c) => c !== body);
+			};
 		}}
 	>
 		<T.Mesh castShadow>
