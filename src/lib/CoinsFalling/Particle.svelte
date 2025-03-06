@@ -12,7 +12,7 @@
 	import { base } from '$app/paths';
 
 	import { T } from '@threlte/core';
-	import { PositionalAudio, AudioListener } from '@threlte/extras';
+	import { PositionalAudio } from '@threlte/extras';
 	import { Collider, RigidBody, type ContactEvent } from '@threlte/rapier';
 	import { writable } from 'svelte/store';
 	import type { Euler, Vector3 } from 'three';

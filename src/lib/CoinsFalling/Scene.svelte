@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { T, useTask } from '@threlte/core';
+	import { T } from '@threlte/core';
 	import { OrbitControls, AudioListener } from '@threlte/extras';
 	import Emitter from './Emitter.svelte';
 	import Ground from './Ground.svelte';
