@@ -10,7 +10,7 @@
 
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { PositionalAudio } from '@threlte/extras';
+	import { PositionalAudio, AudioListener } from '@threlte/extras';
 	import { Collider, RigidBody, type ContactEvent } from '@threlte/rapier';
 	import { writable } from 'svelte/store';
 	import type { Euler, Vector3 } from 'three';
@@ -30,6 +30,8 @@
 		volume: number;
 		stop: (() => any) | undefined;
 		play: ((...args: any[]) => any) | undefined;
+		// stop: (() => any) | undefined;
+		// play: ((...args: any[]) => any) | undefined;
 		source: string;
 	}[] = new Array(9).fill(0).map((_, i) => {
 		return {
@@ -42,11 +44,16 @@
 	});
 
 	const fireSound: ContactEvent = (event) => {
+		console.log('hit');
 		if ($muted) return;
 		const volume = clamp((event.totalForceMagnitude - 30) / 1100, 0.1, 1);
 		const audio = audios.find((a) => a.volume >= volume);
-		audio?.stop?.();
-		audio?.play?.();
+		const sound = new Audio(audio?.source);
+		sound.volume = 0.1;
+		sound.play();
+		sound?.blur();
+		// audio?.stop?.();
+		// audio?.play?.();
 	};
 
 	let rotationCasted: [x: number, y: number, z: number] = $state([0, 0, 0]);
@@ -66,8 +73,6 @@
 			<PositionalAudio
 				autoplay={false}
 				detune={600 - Math.random() * 1200}
-				stop={audio.stop}
-				play={audio.play}
 				src={audio.source}
 				volume={audio.volume}
 			/>
