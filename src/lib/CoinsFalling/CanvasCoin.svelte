@@ -6,11 +6,11 @@
 	import Scene from './Scene.svelte';
 </script>
 
-<div title="Rigid Body" class="fixed">
+<div title="Rigid Body" class="fixed z-50">
 	<button
 		title="toggle sound"
-		class="h-6 w-fit bg-red-500 text-xs"
-		on:click={() => {
+		class=" h-6 w-fit cursor-pointer bg-red-500 text-xs"
+		onclick={() => {
 			$muted = !$muted;
 		}}>audio is muted: {$muted}</button
 	>
