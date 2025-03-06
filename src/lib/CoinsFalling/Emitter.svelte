@@ -44,20 +44,20 @@
 			lastBodyMounted = Date.now();
 			bodies = bodies;
 		}
-		const deleteIds: string[] = [];
-		bodies.forEach((body) => {
-			if (body.mounted + longevityMilliseconds < Date.now()) {
-				deleteIds.push(body.id);
-			}
-		});
+		// const deleteIds: string[] = [];
+		// bodies.forEach((body) => {
+		// 	if (body.mounted + longevityMilliseconds < Date.now()) {
+		// 		deleteIds.push(body.id);
+		// 	}
+		// });
 
-		if (deleteIds.length) {
-			deleteIds.forEach((id) => {
-				const index = bodies.findIndex((body) => body.id === id);
-				if (index !== -1) bodies.splice(index, 1);
-			});
-			bodies = bodies;
-		}
+		// if (deleteIds.length) {
+		// 	deleteIds.forEach((id) => {
+		// 		const index = bodies.findIndex((body) => body.id === id);
+		// 		if (index !== -1) bodies.splice(index, 1);
+		// 	});
+		// 	bodies = bodies;
+		// }
 	});
 </script>
 

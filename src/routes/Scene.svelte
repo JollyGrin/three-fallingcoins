@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
-	import { RigidBody, type RigidBodyApi } from '@threlte/rapier';
-	import { MathUtils, Vector3 } from 'three';
+	import { RigidBody } from '@threlte/rapier';
 
 	// Coin spawn settings
 	let spawnHeight = 10;
-	let coins = $state<RigidBodyApi[]>([]);
+	let coins = $state<(typeof RigidBody)[]>([]);
 	let coinCount = $state(0);
 
 	// Random position within bounds
@@ -33,11 +32,11 @@
 		if (coins.length >= 20) {
 			// Remove oldest coin
 			const oldestCoin = coins[0];
-			if (oldestCoin) {
-				oldestCoin.setTranslation(new Vector3(100, 100, 100));
-				oldestCoin.sleep();
-			}
-			coins = coins.slice(1);
+			// if (oldestCoin) {
+			// 	oldestCoin.setTranslation(new Vector3(100, 100, 100));
+			// 	oldestCoin.sleep();
+			// }
+			// coins = coins.slice(1);
 		}
 
 		// Create new coin
@@ -71,31 +70,29 @@
 <T.AmbientLight intensity={0.5} />
 
 <!-- Ground plane -->
-<RigidBody type="fixed" friction={0.8} restitution={0.2} collisionGroups={0b0001}>
+<RigidBody type="fixed">
 	<T.Mesh rotation.x={-Math.PI / 2} receiveShadow>
 		<T.BoxGeometry args={[10, 10, 0.5]} />
 		<T.MeshStandardMaterial color="#f0f0f0" />
 	</T.Mesh>
 </RigidBody>
 
-<!-- Boundary Walls -->
-<RigidBody type="fixed" friction={0.2} restitution={0.4} collisionGroups={0b0001}>
-	<!-- Back wall -->
+<RigidBody type="fixed">
 	<T.Mesh position={[0, 2, -5]} receiveShadow>
 		<T.BoxGeometry args={[10, 4, 0.2]} />
 		<T.MeshStandardMaterial color="#e0e0e0" transparent opacity={0.5} />
 	</T.Mesh>
-	<!-- Front wall -->
+
 	<T.Mesh position={[0, 2, 5]} receiveShadow>
 		<T.BoxGeometry args={[10, 4, 0.2]} />
 		<T.MeshStandardMaterial color="#e0e0e0" transparent opacity={0.5} />
 	</T.Mesh>
-	<!-- Left wall -->
+
 	<T.Mesh position={[-5, 2, 0]} rotation.y={Math.PI / 2} receiveShadow>
 		<T.BoxGeometry args={[10, 4, 0.2]} />
 		<T.MeshStandardMaterial color="#e0e0e0" transparent opacity={0.5} />
 	</T.Mesh>
-	<!-- Right wall -->
+
 	<T.Mesh position={[5, 2, 0]} rotation.y={Math.PI / 2} receiveShadow>
 		<T.BoxGeometry args={[10, 4, 0.2]} />
 		<T.MeshStandardMaterial color="#e0e0e0" transparent opacity={0.5} />
@@ -107,15 +104,9 @@
 	{@const pos = getRandomPosition()}
 	{@const rot = getRandomRotation()}
 	<RigidBody
-		position={[pos.x, pos.y, pos.z]}
-		rotation={[rot.x, rot.y, rot.z]}
-		restitution={0.3}
-		friction={0.5}
-		collisionGroups={0b0001}
 		gravityScale={1}
 		linearDamping={0.2}
 		angularDamping={0.2}
-		enableSleep={true}
 		oncreate={(body) => {
 			coins = [...coins, body];
 			return () => {
