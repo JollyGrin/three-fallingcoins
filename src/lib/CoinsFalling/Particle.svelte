@@ -9,6 +9,8 @@
 </script>
 
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	import { T } from '@threlte/core';
 	import { PositionalAudio, AudioListener } from '@threlte/extras';
 	import { Collider, RigidBody, type ContactEvent } from '@threlte/rapier';
@@ -39,12 +41,11 @@
 			play: undefined,
 			stop: undefined,
 			volume: (i + 2) / 10,
-			source: `/audio/ball_bounce_${i + 1}.mp3`
+			source: `${base}/audio/ball_bounce_${i + 1}.mp3`
 		};
 	});
 
 	const fireSound: ContactEvent = (event) => {
-		console.log('hit');
 		if ($muted) return;
 		const volume = clamp((event.totalForceMagnitude - 30) / 1100, 0.1, 1);
 		const audio = audios.find((a) => a.volume >= volume);
@@ -52,8 +53,6 @@
 		sound.volume = 0.1;
 		sound.play();
 		sound?.blur();
-		// audio?.stop?.();
-		// audio?.play?.();
 	};
 
 	let rotationCasted: [x: number, y: number, z: number] = $state([0, 0, 0]);
