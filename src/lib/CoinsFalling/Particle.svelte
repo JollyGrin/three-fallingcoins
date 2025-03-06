@@ -1,9 +1,9 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	const geometry = new CylinderGeometry(0.5, 0.5, 0.1, 32);
 	const material = new MeshStandardMaterial({
 		color: '#ffd700',
-		metalness: 0.8,
-		roughness: 0.2
+		metalness: 0.9,
+		roughness: 0.3
 	});
 	export const muted = writable(true);
 </script>
